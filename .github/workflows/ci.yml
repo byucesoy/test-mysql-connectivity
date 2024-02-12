@@ -1,0 +1,27 @@
+name: CI
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+jobs:
+  php74-mysql56:
+    runs-on: ubicloud-standard-16
+    env:
+      phpversion: '7.4'
+    steps:
+    - name: Clone repository
+      uses: nschloe/action-cached-lfs-checkout@v1
+    - name: Install PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ env.phpversion }}
+        coverage: none
+        extensions: gd, gmp, imagick, intl, memcached, mcrypt, mbstring, soap, xml, zip
+        ini-values: date.timezone=Europe/Copenhagen
+    - name: Install MySQL
+      uses: shogo82148/actions-setup-mysql@v1
+      with:
+        mysql-version: '5.6'
+    - name: Tests Connectivity
+      run: mysql -uroot -e 'SELECT version()'
